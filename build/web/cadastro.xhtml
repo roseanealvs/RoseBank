@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./_template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="top">
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="loginForm">
+            <p:growl id="growl" life="2000" />
+            <h:panelGrid style="margin-left: 35%;">
+                <p:panelGrid columns="2" styleClass="login">
+
+                    <p:outputLabel value="#{msgs.nome}"/>
+                    <p:inputText value="#{roseBankBean.usuario.nome}" required="true" requiredMessage="#{msgs.informe_nome}"/>
+
+                    <p:outputLabel value="#{msgs.email}"/>
+                    <p:inputText value="#{roseBankBean.usuario.email}" required="true" requiredMessage="#{msgs.informe_email}"/>
+
+                    <p:outputLabel value="#{msgs.login}"/>
+                    <p:inputText value="#{roseBankBean.usuario.login}" required="true" requiredMessage="#{msgs.informe_login}"/>
+
+
+                    <p:outputLabel value="#{msgs.senha}"/>
+                    <p:password value="#{roseBankBean.usuario.senha}" required="true" requiredMessage="#{msgs.informe_senha}"/>
+
+
+                </p:panelGrid>
+                <p:panelGrid style="margin-left:15%" columns="2">
+                    <p:commandButton value="#{msgs.salvar}" actionListener="#{roseBankBean.salvarCadastro()}"  
+                                     icon="ui-icon-disk" 
+                                     update="growl"/>
+                    <p:commandButton value="#{msgs.cancelar}" action="#{roseBankBean.cancelar()}" immediate="true"/>
+
+                </p:panelGrid>
+                <h:outputLabel value="#{roseBankBean.message}" styleClass="erro" />
+            </h:panelGrid>    
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

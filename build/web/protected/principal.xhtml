@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/_template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="top">
+        <p:commandLink style="position: fixed; top:0; right:0; padding:20px;" action="#{roseBankBean.sair()}">
+            <h:outputText value="#{msgs.sair}"/>
+        </p:commandLink>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="formPrincipal">
+           
+            <p:tabView id="tabViewId" orientation="top">
+                <p:ajax event="tabChange" listener="#{roseBankBean.onTabChange}" update=":formPrincipal"/>
+                <p:tab title="#{msgs.inicio}">
+                    <p:outputPanel style="width:400px; margin: 5% 0 0 35%;">
+                        <h:outputText style="font-size:20px;" value="#{msgs.inicio_conteudo}"/>
+                    </p:outputPanel>
+                </p:tab>
+                <p:tab id="userTab" title="#{msgs.amigos}">
+                    <p:dataTable paginator="true" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             id="tabelaUsuario" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
+                             value="#{roseBankBean.usuarios}" var="u">
+                        <f:facet name="caption">#{msgs.usuario}</f:facet>
+                        <p:column class="columnStyle" headerText="#{msgs.nome}">
+                            <h:outputText value="#{u.nome}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.id}">
+                            <h:outputText value="#{u.id}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.email}">
+                            <h:outputText value="#{u.email}"/>
+                        </p:column>
+                        
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="contaTab" title="#{msgs.conta}">
+                    <p:dataTable paginator="true" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             id="tabelaConta" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
+                             value="#{roseBankBean.contas}" var="c">
+                        <f:facet name="caption">#{msgs.contas}</f:facet>
+                        <p:column class="columnStyle" headerText="#{msgs.id}">
+                            <h:outputText value="#{c.id}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.descricao}">
+                            <h:outputText value="#{c.descricao}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.valor}">
+                            <h:outputText value="#{c.valorAtual}"/>
+                        </p:column>
+                       
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="transacaoTab" title="#{msgs.transacoes}">
+                    <p:dataTable paginator="true" 
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             id="tabelaTransacoes" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
+                             value="#{roseBankBean.transacoes}" var="t">
+                        <f:facet name="caption">#{msgs.transacoes}</f:facet>
+                        <p:column class="columnStyle" headerText="#{msgs.descricao}">
+                            <h:outputText value="#{t.descricao}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.data}">
+                            <h:outputText value="#{t.data}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.valor}">
+                            <h:outputText value="#{t.valor}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.conta}">
+                            <h:outputText value="#{t.contaOrigem}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="addAmigoTab" title="#{msgs.adicionar_amigo}">
+                    <p:dataTable paginator="true" 
+                             id="tabelaBuscaAmigos" emptyMessage="#{msgs.nao_tem_registro}"
+                             value="#{roseBankBean.transacoes}" var="t">
+                        <f:facet name="caption">#{msgs.usuario}</f:facet>
+                        <p:column class="columnStyle" headerText="#{msgs.nome}" filterBy="#{u.nome}" filterMatchMode="contains">
+                            <h:outputText value="#{u.nome}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.id}" filterBy="#{u.id}" filterMatchMode="contains">
+                            <h:outputText value="#{u.id}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.email}">
+                            <h:outputText value="#{u.email}"/>
+                        </p:column>
+                        <p:column headerText="#{msgs.adicionar_amigo}">
+                            <p:commandButton icon="ui-icon-disk" action="#{roseBankBean.adicionarAmigo()}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

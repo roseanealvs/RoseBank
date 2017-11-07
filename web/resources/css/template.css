@@ -1,0 +1,39 @@
+/* 
+             * Tipo de fonte e tamanho padrão.
+             */
+* {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif !important;
+    font-size: 12px;
+}
+/* 
+ * Define a altura da página para 100%.
+ */
+html {
+    height: 100%;
+}
+/* 
+ * Define a altura/altura-mínima e ajusta a largura da página, além de centralizá-la.
+ */
+
+a {
+    text-decoration: none !important;
+}
+a:hover {
+    text-decoration: underline !important;
+}
+/* 
+ * Define o bloco p:layout com 100% de altura.
+ */
+.layout {
+    height: 100%;
+}
+
+
+.ui-panelgrid td, .ui-panelgrid tr {
+    border-style: none !important
+}
+
+.ui-widget-content {
+    border:none !important;
+    
+}

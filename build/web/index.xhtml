@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./_template.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="top">
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="loginForm">
+            <p:growl id="growl" life="2000" />
+            <h:panelGrid styleClass="login">
+                <p:panelGrid columns="2" >
+
+                    <p:outputLabel value="#{msgs.login}"/>
+                    <p:inputText value="#{roseBankBean.usuario.login}" required="true"
+                                 id="login" label="Login" requiredMessage="#{msgs.preencher_login}">
+                    </p:inputText>
+
+                    <p:outputLabel value="#{msgs.senha}"/>
+                    <p:password value="#{roseBankBean.usuario.senha}" required="true"
+                                id="senha" label="Senha" requiredMessage="#{msgs.preencher_senha}"/>
+
+                </p:panelGrid>
+                <p:panelGrid columns="3">
+                    <p:commandButton value="#{msgs.entrar}" 
+                                     action="#{roseBankBean.autenticar()}" update="growl"/>
+                    <p:commandButton value="#{msgs.cadastrar}" 
+                                     action="#{roseBankBean.cadastrar()}" 
+                                     update="loginForm"/>
+                    <p:selectOneMenu  onchange="submit()" 
+                                     value="#{roseBankBean.localizacao}" valueChangeListener="#{roseBankBean.mudouIdioma}" 
+                                     converter="converter.LocalizacaoConverter">
+                        <f:selectItems value="#{roseBankBean.idiomasSuportados}"/>
+                    </p:selectOneMenu> 
+                </p:panelGrid>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

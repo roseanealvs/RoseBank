@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <f:view locale="#{roseBankBean.localizacao}"/>
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet library="css" name="styles.css"/> 
+        <h:outputStylesheet library="css" name="template.css"/> 
+        <h:outputScript library="js" name="scripts.js"/>
+        <title>Rose Bank</title>
+       
+    </h:head>
+
+    <h:body>
+        <p:layoutUnit position="north" styleClass="north">
+            <ui:insert name="top">Rose Bank</ui:insert>
+        </p:layoutUnit>
+        <p:layoutUnit position="center" styleClass="center">
+            <ui:insert name="content">Content</ui:insert>
+        </p:layoutUnit>       
+        <p:layoutUnit position="south" styleClass="south" size="15%">
+            <p:panelGrid columns="2">
+                <p:graphicImage name="imagens/Money_Bag_Emoji.png" height="50px" />
+                <p:panelGrid columns="1">
+                    <h:outputText value="Roseane Alves - 201316294" />
+                    <h:outputText value="Kleber" />
+                </p:panelGrid>
+                
+            </p:panelGrid>
+        </p:layoutUnit>
+    </h:body>
+ 
+</html>

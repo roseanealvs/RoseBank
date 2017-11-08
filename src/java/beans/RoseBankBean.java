@@ -8,6 +8,7 @@ package beans;
 import Exceptions.EmailJaExisteException;
 import Exceptions.UsuarioJaExisteException;
 import facade.FacadeBank;
+import facade.FacadeBankREST;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,10 @@ import javax.servlet.http.HttpSession;
 import model.Conta;
 import model.Transacao;
 import model.Usuario;
+import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.TabChangeEvent;
+import rest.ContaRESTClient;
+import rest.UsuarioRESTClient;
 
 /**
  *
@@ -39,6 +43,7 @@ public class RoseBankBean implements Serializable {
     private Usuario usuario = new Usuario();
     private Conta conta = new Conta();
     private FacadeBank facade = new FacadeBank();
+    private FacadeBankREST facadeRest = new FacadeBankREST();
     private String message;
     private String acao;
     private Locale localizacao;
@@ -151,7 +156,6 @@ public class RoseBankBean implements Serializable {
     public String deleteUsuario(Usuario user) {
         facade.deleteUsuario(user);
         usuarios.remove(user);
-        changeSessionAcao("user_con");
         return null;
     }
 
@@ -198,19 +202,24 @@ public class RoseBankBean implements Serializable {
     }
 
     public String updateConta(Conta c) {
-        facade.updateConta(c);
-
-        changeSessionAcao("conta_con");
+        facadeRest.editarConta(c);
         return null;
     }
 
     public String updateUsuario(Usuario u) {
-        facade.update(u);
-
-        changeSessionAcao("user_con");
+        facadeRest.editarUsuario(u);
+        
         return null;
     }
-
+    
+    public void onEdit(RowEditEvent event) {        
+        Conta c = (Conta) event.getObject();
+        ContaRESTClient rest = new ContaRESTClient();
+        rest.edit(conta);
+        FacesMessage msg = new FacesMessage("Conta atualizada", c.getDescricao());
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+    }
+    
     public String autenticar() {
         if (getFacade().logar(getUsuario())) {
             setSessionUser();

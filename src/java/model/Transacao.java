@@ -15,7 +15,7 @@ public class Transacao {
     private String valor;
     private String usuario;
     private String contaOrigem;
-
+    private String id;
     /**
      * @return the descricao
      */
@@ -84,6 +84,20 @@ public class Transacao {
      */
     public void setContaOrigem(String contaOrigem) {
         this.contaOrigem = contaOrigem;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

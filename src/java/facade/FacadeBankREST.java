@@ -5,8 +5,8 @@
  */
 package facade;
 
-import model.Conta;
-import model.Usuario;
+import model.ContaModel;
+import model.UsuarioModel;
 import rest.ContaRESTClient;
 import rest.UsuarioRESTClient;
 
@@ -15,13 +15,23 @@ import rest.UsuarioRESTClient;
  * @author roseanealves
  */
 public class FacadeBankREST {
-    public void editarConta(Conta c) {
+    public void editarConta(ContaModel c) {
         ContaRESTClient rest = new ContaRESTClient();
         rest.edit(c);
     }
     
-    public void editarUsuario(Usuario u) {
+    public void editarUsuario(UsuarioModel u) {
         UsuarioRESTClient rest = new UsuarioRESTClient();
         rest.edit(u);
+    }
+    
+    public void deletarConta(ContaModel c) {
+        ContaRESTClient rest = new ContaRESTClient();
+        rest.delete(c.getId());
+    }
+    
+    public void deletarUsuario(UsuarioModel u) {
+        UsuarioRESTClient rest = new UsuarioRESTClient();
+        rest.delete(u.getId());
     }
 }

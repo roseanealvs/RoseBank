@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Conta;
+import model.ContaModel;
 
 
 /**
@@ -21,10 +21,10 @@ import model.Conta;
  */
 public class ContaDao {
 
-    public List<Conta> getContas(String idUsuario) {
+    public List<ContaModel> getContas(String idUsuario) {
         int i = 1;
-        Conta c;
-        List<Conta> contas = new ArrayList<>();
+        ContaModel c;
+        List<ContaModel> contas = new ArrayList<>();
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -38,7 +38,7 @@ public class ContaDao {
                 
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    c = new Conta();
+                    c = new ContaModel();
                     c.setDescricao(rs.getString("ds_conta"));
                     c.setId(rs.getString("id"));
                     c.setValorAtual(rs.getString("valor_atual"));
@@ -56,10 +56,10 @@ public class ContaDao {
         return contas;
     }
     
-    public Conta getContaPorID(String id) {
+    public ContaModel getContaPorID(String id) {
        
         int i = 1;
-        Conta c = null;
+        ContaModel c = null;
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -72,7 +72,7 @@ public class ContaDao {
                 
                 rs = ps.executeQuery();
                 if (rs.next()) {
-                    c = new Conta();
+                    c = new ContaModel();
                     c.setDescricao(rs.getString("ds_conta"));
                     c.setId(rs.getString("id"));
                     c.setValorAtual(rs.getString("valor_atual"));

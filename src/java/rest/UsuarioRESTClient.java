@@ -11,8 +11,9 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import json.ContaJSON;
-import model.Conta;
-import model.Usuario;
+import json.UsuarioJSON;
+import model.ContaModel;
+import model.UsuarioModel;
 
 /**
  *
@@ -23,27 +24,37 @@ public class UsuarioRESTClient {
             = "http://localhost:8080/RESTRoseBank/webresources/";
     private String response;
     
-    public List<Conta> findAll() {
+    public List<UsuarioModel> findAll() {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.usuario").
                 request(MediaType.APPLICATION_JSON).
                 get(String.class);
         client.close();
-        return ContaJSON.fromJSONArray(response);
+        return UsuarioJSON.fromJSONArray(response);
     }
 
-    public Conta find(Long id) {
+    public UsuarioModel findUserByLoginAndPassword(String login, String senha) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.usuario/" + login + "/" + senha).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return UsuarioJSON.fromJSONObject(response);
+    }
+    
+    public UsuarioModel find(Long id) {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.usuario/" + id).
                 request(MediaType.APPLICATION_JSON)
                 .get(String.class);
         client.close();
-        return ContaJSON.fromJSONObject(response);
+        return UsuarioJSON.fromJSONObject(response);
     }
 
-    public void create(Usuario usuario) {
+    public void create(UsuarioModel usuario) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.usuario").
                 request(MediaType.APPLICATION_JSON).
@@ -52,7 +63,7 @@ public class UsuarioRESTClient {
         client.close();
     }
 
-    public void edit(Usuario usuario) {
+    public void edit(UsuarioModel usuario) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.usuario/"
                 + usuario.getId()).
@@ -62,7 +73,7 @@ public class UsuarioRESTClient {
         client.close();
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL
                 + "service.usuario/" + id).

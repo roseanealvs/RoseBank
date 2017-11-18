@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import model.Usuario;
+import model.UsuarioModel;
 
 
 /**
@@ -80,10 +80,10 @@ public class UsuarioDao {
         } 
         return false;
     }
-    public Usuario getUsuario(String usuario) {
+    public UsuarioModel getUsuario(String usuario) {
        
         int i = 1;
-        Usuario user = null;
+        UsuarioModel user = null;
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -96,7 +96,7 @@ public class UsuarioDao {
                 
                 rs = ps.executeQuery();
                 if (rs.next()) {
-                    user = new Usuario();
+                    user = new UsuarioModel();
                     user.setId(rs.getString("id"));
                     user.setLogin(rs.getString("login"));
                     user.setNome(rs.getString("nome"));
@@ -115,7 +115,7 @@ public class UsuarioDao {
         return user;
     }
     
-    public void updateUsuario(Usuario user) {
+    public void updateUsuario(UsuarioModel user) {
       
         int i = 1;
         try {
@@ -143,7 +143,7 @@ public class UsuarioDao {
         } 
     }
     
-    public void insertUsuario(Usuario user) {
+    public void insertUsuario(UsuarioModel user) {
       
         int i = 1;
         try {
@@ -173,7 +173,7 @@ public class UsuarioDao {
         } 
     }
     
-    public void deleteUsuario(Usuario user) {
+    public void deleteUsuario(UsuarioModel user) {
       
         int i = 1;
         try {
@@ -198,10 +198,10 @@ public class UsuarioDao {
         } 
     }
     
-    public List<Usuario> getUsuarios(String excetoUserId) {
+    public List<UsuarioModel> getUsuarios(String excetoUserId) {
         int i = 1;
-        Usuario u;
-        List<Usuario> usuarios = new ArrayList<>();
+        UsuarioModel u;
+        List<UsuarioModel> usuarios = new ArrayList<>();
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -214,7 +214,7 @@ public class UsuarioDao {
                 ps.setString(1, excetoUserId);
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    u = new Usuario();
+                    u = new UsuarioModel();
                     u.setId(rs.getString("u.id"));
                     u.setNome(rs.getString("u.nome"));
                     u.setLogin(rs.getString("u.login"));
@@ -233,10 +233,10 @@ public class UsuarioDao {
         return usuarios;
     }
     
-    public List<Usuario> getAmigosUsuario(String idUsuario) {
+    public List<UsuarioModel> getAmigosUsuario(String idUsuario) {
         int i = 1;
-        Usuario u;
-        List<Usuario> usuarios = new ArrayList<>();
+        UsuarioModel u;
+        List<UsuarioModel> usuarios = new ArrayList<>();
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -250,7 +250,7 @@ public class UsuarioDao {
                 
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    u = new Usuario();
+                    u = new UsuarioModel();
                     u.setId(rs.getString("u.id"));
                     u.setNome(rs.getString("u.nome"));
                     u.setLogin(rs.getString("u.login"));

@@ -13,15 +13,15 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
-import model.Transacao;
-import model.Usuario;
+import model.TransacaoModel;
+import model.UsuarioModel;
 
 /**
  *
  * @author roseanealves
  */
 public class UsuarioJSON {
-    public static String toJSON(Usuario usuario) {
+    public static String toJSON(UsuarioModel usuario) {
         JsonObject usuarioJSON
                 = Json.createObjectBuilder().
                 add("login", usuario.getLogin()).
@@ -34,12 +34,12 @@ public class UsuarioJSON {
         return usuarioJSON.toString();
     }
 
-    public static Usuario fromJSONObject(String json) {
+    public static UsuarioModel fromJSONObject(String json) {
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonObject obj = reader.readObject();
         reader.close();
-        Usuario u = new Usuario();
+        UsuarioModel u = new UsuarioModel();
         u.setLogin(obj.getString("login"));
         u.setSenha(obj.getString("senha"));
         u.setNome(obj.getString("nome"));
@@ -48,16 +48,16 @@ public class UsuarioJSON {
         return u;
     }
 
-    public static List<Usuario> fromJSONArray(
+    public static List<UsuarioModel> fromJSONArray(
             String json) {
-        List<Usuario> usuarios = new ArrayList<>();
+        List<UsuarioModel> usuarios = new ArrayList<>();
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonArray usuarioArray = reader.readArray();
         reader.close();
         for (JsonValue value : usuarioArray) {
             JsonObject obj = (JsonObject) value;
-            Usuario u = new Usuario();
+            UsuarioModel u = new UsuarioModel();
             u.setLogin(obj.getString("login"));
             u.setSenha(obj.getString("senha"));
             u.setNome(obj.getString("nome"));

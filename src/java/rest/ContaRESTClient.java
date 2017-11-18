@@ -11,7 +11,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import json.ContaJSON;
-import model.Conta;
+import model.ContaModel;
 
 /**
  *
@@ -22,7 +22,7 @@ public class ContaRESTClient {
             = "http://localhost:8080/RESTRoseBank/webresources/";
     private String response;
     
-    public List<Conta> findAll() {
+    public List<ContaModel> findAll() {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.conta").
@@ -32,7 +32,7 @@ public class ContaRESTClient {
         return ContaJSON.fromJSONArray(response);
     }
 
-    public Conta find(Long id) {
+    public ContaModel find(Long id) {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.conta/" + id).
@@ -42,7 +42,7 @@ public class ContaRESTClient {
         return ContaJSON.fromJSONObject(response);
     }
 
-    public void create(Conta conta) {
+    public void create(ContaModel conta) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.conta").
                 request(MediaType.APPLICATION_JSON).
@@ -51,7 +51,7 @@ public class ContaRESTClient {
         client.close();
     }
 
-    public void edit(Conta conta) {
+    public void edit(ContaModel conta) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.conta/"
                 + conta.getId()).
@@ -61,7 +61,7 @@ public class ContaRESTClient {
         client.close();
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL
                 + "service.conta/" + id).

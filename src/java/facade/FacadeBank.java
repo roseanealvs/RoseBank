@@ -5,54 +5,52 @@
  */
 package facade;
 
-import Exceptions.EmailJaExisteException;
-import Exceptions.UsuarioJaExisteException;
 import dao.ContaDao;
 import dao.DaoFactory;
 import dao.TransacaoDao;
 import dao.UsuarioDao;
 import java.util.List;
-import model.Conta;
-import model.Transacao;
-import model.Usuario;
+import model.ContaModel;
+import model.TransacaoModel;
+import model.UsuarioModel;
 
 /**
  *
  * @author roseanealves
  */
 public class FacadeBank {
-    public boolean logar(Usuario user) {
+    public boolean logar(UsuarioModel user) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         return userDao.getLoginSenhaValido(user.getLogin(), user.getSenha());
     }
     
-    public Usuario getUsuario(Usuario user) {
+    public UsuarioModel getUsuario(UsuarioModel user) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         return userDao.getUsuario(user.getLogin());
     }
     
-    public Conta getConta(String id) {
+    public ContaModel getConta(String id) {
         ContaDao contaDao = DaoFactory.getContaDaoInstance();
         return contaDao.getContaPorID(id);
     }
     
-    public void update(Usuario user) {
+    public void update(UsuarioModel user) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         userDao.updateUsuario(user);
     }
     
-    public void deleteUsuario(Usuario user) {
+    public void deleteUsuario(UsuarioModel user) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         userDao.deleteUsuario(user);
     }
     
     
-    public List<Conta> getContasPorUsuario(String idUsuario){
+    public List<ContaModel> getContasPorUsuario(String idUsuario){
         ContaDao contaDao = DaoFactory.getContaDaoInstance();
         return contaDao.getContas(idUsuario);
     }
     
-    public List<Usuario> getUsuarios(String excetoUserLogin) {
+    public List<UsuarioModel> getUsuarios(String excetoUserLogin) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         return userDao.getUsuarios(excetoUserLogin);
     }
@@ -62,17 +60,17 @@ public class FacadeBank {
         contaDao.deleteConta(id);
     }
     
-    public void updateConta(Conta c) {
+    public void updateConta(ContaModel c) {
         ContaDao contaDao = DaoFactory.getContaDaoInstance();
         contaDao.updateConta(c.getId(), c.getDescricao());
     }
     
-    public List<Usuario> getAmigosUsuario(String id) {
+    public List<UsuarioModel> getAmigosUsuario(String id) {
         UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
         return userDao.getAmigosUsuario(id);
     }
     
-    public void updateValorConta(Conta c) throws Exception {
+    public void updateValorConta(ContaModel c) throws Exception {
         ContaDao contaDao = DaoFactory.getContaDaoInstance();
         if (Double.parseDouble(this.getConta(c.getId()).getValorAtual()) < Double.parseDouble(c.getValorTransferir())) {
             throw new Exception("Saldo Insuficiente");
@@ -81,12 +79,12 @@ public class FacadeBank {
     }
     
     
-    public void insertConta(Conta c) {
+    public void insertConta(ContaModel c) {
         ContaDao contaDao = DaoFactory.getContaDaoInstance();
         contaDao.insertConta(c.getIdUsuario(), c.getDescricao());
     }
     
-    public List<Transacao> getTransacoes(String usuarioLogin) {
+    public List<TransacaoModel> getTransacoes(String usuarioLogin) {
         TransacaoDao transacaoDao = DaoFactory.getTransacaoDaoInstance();
         return transacaoDao.getTransacoes(usuarioLogin);
     }
@@ -95,14 +93,14 @@ public class FacadeBank {
         
     }
     
-    public void inserirUsuario(Usuario user) throws UsuarioJaExisteException, EmailJaExisteException {
-        UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
-        if (userDao.getUsuario(user.getLogin()) != null) {
-            throw new UsuarioJaExisteException("Login já cadastrado");
-        }
-        if (userDao.isEmailCadastrado(user.getEmail())) {
-            throw new EmailJaExisteException("Email já cadastrado");
-        }
-        userDao.insertUsuario(user);
-    }
+//    public void inserirUsuario(UsuarioModel user)  {
+//        UsuarioDao userDao = DaoFactory.getUsuarioDaoInstance();
+//        if (userDao.getUsuario(user.getLogin()) != null) {
+//            throw new UsuarioJaExisteException("Login já cadastrado");
+//        }
+//        if (userDao.isEmailCadastrado(user.getEmail())) {
+//            throw new EmailJaExisteException("Email já cadastrado");
+//        }
+//        userDao.insertUsuario(user);
+//    }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Transacao;
+import model.TransacaoModel;
 
 
 /**
@@ -20,10 +20,10 @@ import model.Transacao;
  * @author roseanealves
  */
 public class TransacaoDao {
-    public List<Transacao> getTransacoes(String usuarioId) {
+    public List<TransacaoModel> getTransacoes(String usuarioId) {
         int i = 1;
-        Transacao t;
-        List<Transacao> transacoes = new ArrayList<>();
+        TransacaoModel t;
+        List<TransacaoModel> transacoes = new ArrayList<>();
         try {
             Connection conn = DaoFactory.getConnection();
             StringBuilder query = new StringBuilder();
@@ -36,7 +36,7 @@ public class TransacaoDao {
                 ps.setString(1, usuarioId);
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    t = new Transacao();
+                    t = new TransacaoModel();
                     t.setDescricao(rs.getString("ds_transacao"));
                     t.setData(rs.getString("data_transacao"));
                     t.setValor(rs.getString("valor"));

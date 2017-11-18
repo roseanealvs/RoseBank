@@ -5,8 +5,7 @@
  */
 package beans;
 
-import Exceptions.EmailJaExisteException;
-import Exceptions.UsuarioJaExisteException;
+
 import facade.FacadeBank;
 import facade.FacadeBankREST;
 import java.io.Serializable;
@@ -22,13 +21,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
-import model.Conta;
-import model.Transacao;
-import model.Usuario;
+import model.ContaModel;
+import model.DAO;
+import model.TransacaoModel;
+import model.UsuarioModel;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.TabChangeEvent;
 import rest.ContaRESTClient;
-import rest.UsuarioRESTClient;
 
 /**
  *
@@ -37,11 +36,11 @@ import rest.UsuarioRESTClient;
 @ManagedBean
 @SessionScoped
 public class RoseBankBean implements Serializable {
-    private List<Conta> contas = new ArrayList<>();
-    private List<Usuario> usuarios = new ArrayList<>();
-    private List<Transacao> transacoes = new ArrayList<>();
-    private Usuario usuario = new Usuario();
-    private Conta conta = new Conta();
+    private List<ContaModel> contas = new ArrayList<>();
+    private List<UsuarioModel> usuarios = new ArrayList<>();
+    private List<TransacaoModel> transacoes = new ArrayList<>();
+    private UsuarioModel usuario = new UsuarioModel();
+    private ContaModel conta = new ContaModel();
     private FacadeBank facade = new FacadeBank();
     private FacadeBankREST facadeRest = new FacadeBankREST();
     private String message;
@@ -73,16 +72,18 @@ public class RoseBankBean implements Serializable {
     }
     
     public String salvarCadastro() {
-        try {
+//        try {
             message = null;
-            facade.inserirUsuario(usuario);
-            usuario = new Usuario();
+            DAO dao = new DAO(UsuarioModel.class);
+            dao.adicionar(usuario);
+            
+            usuario = new UsuarioModel();
             return "/index";
-        } catch (UsuarioJaExisteException | EmailJaExisteException e) {
-            addMessage(getResourceMessage("usuario_salvo"));
-        }
+//        } catch (UsuarioJaExisteException | EmailJaExisteException e) {
+//            addMessage(getResourceMessage("usuario_salvo"));
+//        }
 
-        return null;
+//        return null;
     }
 
     private String getResourceMessage(String msg) {
@@ -101,14 +102,14 @@ public class RoseBankBean implements Serializable {
     }
 
     public String cancelar() {
-        usuario = new Usuario();
+        usuario = new UsuarioModel();
         return "index";
     }
 
-    private Usuario getSessionUser() {
+    private UsuarioModel getSessionUser() {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
-        return (Usuario) session.getAttribute("usuario");
+        return (UsuarioModel) session.getAttribute("usuario");
     }
 
     private void setSessionUser() {
@@ -142,19 +143,19 @@ public class RoseBankBean implements Serializable {
     }
 
     public String getContasUsuario() {
-        setContas(facade.getContasPorUsuario(getSessionUser().getLogin()));
+        DAO dao = new DAO(ContaModel.class);
+        setContas(dao.listarGenerico("Conta.findByIdUsuario"));
         return null;
     }
 
-    public String deleteConta(Conta conta) {
-        facade.deleteConta(conta.getId());
+    public String deleteConta(ContaModel conta) {
+        facadeRest.deletarConta(conta);
         getContas().remove(conta);
-        changeSessionAcao("conta_con");
         return null;
     }
 
-    public String deleteUsuario(Usuario user) {
-        facade.deleteUsuario(user);
+    public String deleteUsuario(UsuarioModel user) {
+        facadeRest.deletarUsuario(user);
         usuarios.remove(user);
         return null;
     }
@@ -166,19 +167,19 @@ public class RoseBankBean implements Serializable {
         session.setAttribute("acao", acao);
     }
 
-    public String setAcaoAlterar(Conta c) {
+    public String setAcaoAlterar(ContaModel c) {
         changeSessionAcao("conta_alt");
         setSessionConta(c);
         return null;
     }
 
-    public String setAcaoAlterarUsuario(Usuario u) {
+    public String setAcaoAlterarUsuario(UsuarioModel u) {
         changeSessionAcao("user_alt");
         setSessionUserSelecionado(u);
         return null;
     }
 
-    public void setSessionUserSelecionado(Usuario userSelecionado) {
+    public void setSessionUserSelecionado(UsuarioModel userSelecionado) {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
         if (session.getAttribute("usuarioSelecionado") != null) {
@@ -187,13 +188,13 @@ public class RoseBankBean implements Serializable {
         session.setAttribute("usuarioSelecionado", userSelecionado);
     }
 
-    private Conta getSessionConta() {
+    private ContaModel getSessionConta() {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
-        return (Conta) session.getAttribute("conta");
+        return (ContaModel) session.getAttribute("conta");
     }
 
-    private void setSessionConta(Conta c) {
+    private void setSessionConta(ContaModel c) {
         FacesContext fc = FacesContext.getCurrentInstance();
         HttpSession session = (HttpSession) fc.getExternalContext().getSession(true);
         if (session.getAttribute("conta") == null) {
@@ -201,19 +202,19 @@ public class RoseBankBean implements Serializable {
         }
     }
 
-    public String updateConta(Conta c) {
+    public String updateConta(ContaModel c) {
         facadeRest.editarConta(c);
         return null;
     }
 
-    public String updateUsuario(Usuario u) {
+    public String updateUsuario(UsuarioModel u) {
         facadeRest.editarUsuario(u);
         
         return null;
     }
     
     public void onEdit(RowEditEvent event) {        
-        Conta c = (Conta) event.getObject();
+        ContaModel c = (ContaModel) event.getObject();
         ContaRESTClient rest = new ContaRESTClient();
         rest.edit(conta);
         FacesMessage msg = new FacesMessage("Conta atualizada", c.getDescricao());
@@ -221,11 +222,13 @@ public class RoseBankBean implements Serializable {
     }
     
     public String autenticar() {
-        if (getFacade().logar(getUsuario())) {
+        DAO dao = new DAO(UsuarioModel.class);
+        if (dao.listarGenerico("Usuario.findByLoginAndSenha", usuario.getLogin(), usuario.getSenha()) == null) {
             setSessionUser();
             setAutorizado(true);
             return "/protected/principal";
         }
+       
         setAutorizado(false);
         addMessage("login/senha inválidos");
 
@@ -267,28 +270,28 @@ public class RoseBankBean implements Serializable {
     /**
      * @return the usuario
      */
-    public Usuario getUsuario() {
+    public UsuarioModel getUsuario() {
         return usuario;
     }
 
     /**
      * @param usuario the usuario to set
      */
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(UsuarioModel usuario) {
         this.usuario = usuario;
     }
 
     /**
      * @return the conta
      */
-    public Conta getConta() {
+    public ContaModel getConta() {
         return conta;
     }
 
     /**
      * @param conta the conta to set
      */
-    public void setConta(Conta conta) {
+    public void setConta(ContaModel conta) {
         this.conta = conta;
     }
 
@@ -337,42 +340,42 @@ public class RoseBankBean implements Serializable {
     /**
      * @return the contas
      */
-    public List<Conta> getContas() {
+    public List<ContaModel> getContas() {
         return contas;
     }
 
     /**
      * @param contas the contas to set
      */
-    public void setContas(List<Conta> contas) {
+    public void setContas(List<ContaModel> contas) {
         this.contas = contas;
     }
 
     /**
      * @return the usuarios
      */
-    public List<Usuario> getUsuarios() {
+    public List<UsuarioModel> getUsuarios() {
         return usuarios;
     }
 
     /**
      * @param usuarios the usuarios to set
      */
-    public void setUsuarios(List<Usuario> usuarios) {
+    public void setUsuarios(List<UsuarioModel> usuarios) {
         this.usuarios = usuarios;
     }
 
     /**
      * @return the transacoes
      */
-    public List<Transacao> getTransacoes() {
+    public List<TransacaoModel> getTransacoes() {
         return transacoes;
     }
 
     /**
      * @param transacoes the transacoes to set
      */
-    public void setTransacoes(List<Transacao> transacoes) {
+    public void setTransacoes(List<TransacaoModel> transacoes) {
         this.transacoes = transacoes;
     }
 

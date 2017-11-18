@@ -11,8 +11,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import json.ContaJSON;
-import model.Conta;
-import model.Transacao;
+import model.ContaModel;
+import model.TransacaoModel;
 
 /**
  *
@@ -23,7 +23,7 @@ public class TransacaoRESTClient {
             = "http://localhost:8080/RESTRoseBank/webresources/";
     private String response;
     
-    public List<Conta> findAll() {
+    public List<ContaModel> findAll() {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.transacao").
@@ -33,7 +33,7 @@ public class TransacaoRESTClient {
         return ContaJSON.fromJSONArray(response);
     }
 
-    public Conta find(Long id) {
+    public ContaModel find(Long id) {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.transacao/" + id).
@@ -43,7 +43,7 @@ public class TransacaoRESTClient {
         return ContaJSON.fromJSONObject(response);
     }
 
-    public void create(Transacao transacao) {
+    public void create(TransacaoModel transacao) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.transacao").
                 request(MediaType.APPLICATION_JSON).
@@ -52,7 +52,7 @@ public class TransacaoRESTClient {
         client.close();
     }
 
-    public void edit(Transacao transacao) {
+    public void edit(TransacaoModel transacao) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.transacao/"
                 + transacao.getId()).

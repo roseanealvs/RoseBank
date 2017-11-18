@@ -13,15 +13,15 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
-import model.Conta;
-import model.Transacao;
+import model.ContaModel;
+import model.TransacaoModel;
 
 /**
  *
  * @author roseanealves
  */
 public class TransacaoJSON {
-    public static String toJSON(Transacao transacao) {
+    public static String toJSON(TransacaoModel transacao) {
         JsonObject transacaoJSON
                 = Json.createObjectBuilder().
                 add("data", transacao.getData()).
@@ -34,12 +34,12 @@ public class TransacaoJSON {
         return transacaoJSON.toString();
     }
 
-    public static Transacao fromJSONObject(String json) {
+    public static TransacaoModel fromJSONObject(String json) {
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonObject transacaoObject = reader.readObject();
         reader.close();
-        Transacao t = new Transacao();
+        TransacaoModel t = new TransacaoModel();
         t.setData(transacaoObject.getString("data"));
         t.setDescricao(transacaoObject.getString("descricao"));
         t.setValor(transacaoObject.getString("valor"));
@@ -48,16 +48,16 @@ public class TransacaoJSON {
         return t;
     }
 
-    public static List<Transacao> fromJSONArray(
+    public static List<TransacaoModel> fromJSONArray(
             String json) {
-        List<Transacao> transacoes = new ArrayList<>();
+        List<TransacaoModel> transacoes = new ArrayList<>();
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonArray contaArray = reader.readArray();
         reader.close();
         for (JsonValue value : contaArray) {
             JsonObject obj = (JsonObject) value;
-            Transacao t = new Transacao();
+            TransacaoModel t = new TransacaoModel();
             t.setData(obj.getString("data"));
             t.setDescricao(obj.getString("descricao"));
             t.setValor(obj.getString("valor"));

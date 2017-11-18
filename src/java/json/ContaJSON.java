@@ -13,14 +13,14 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
-import model.Conta;
+import model.ContaModel;
 
 /**
  *
  * @author roseanealves
  */
 public class ContaJSON {
-    public static String toJSON(Conta conta) {
+    public static String toJSON(ContaModel conta) {
         JsonObject contaJSON
                 = Json.createObjectBuilder().
                 add("id", conta.getId()).
@@ -33,12 +33,12 @@ public class ContaJSON {
         return contaJSON.toString();
     }
 
-    public static Conta fromJSONObject(String json) {
+    public static ContaModel fromJSONObject(String json) {
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonObject contaObject = reader.readObject();
         reader.close();
-        Conta c = new Conta();
+        ContaModel c = new ContaModel();
         c.setId(contaObject.getString("id"));
         c.setDescricao(contaObject.getString("descricao"));
         c.setValorAtual(contaObject.getString("valorAtual"));
@@ -47,16 +47,16 @@ public class ContaJSON {
         return c;
     }
 
-    public static List<Conta> fromJSONArray(
+    public static List<ContaModel> fromJSONArray(
             String json) {
-        List<Conta> contas = new ArrayList<>();
+        List<ContaModel> contas = new ArrayList<>();
         JsonReader reader = Json.createReader(
                 new StringReader(json));
         JsonArray contaArray = reader.readArray();
         reader.close();
         for (JsonValue value : contaArray) {
             JsonObject obj = (JsonObject) value;
-            Conta c = new Conta();
+            ContaModel c = new ContaModel();
             c.setId(obj.getString("id"));
             c.setDescricao(obj.getString("descricao"));
             c.setValorAtual(obj.getString("valorAtual"));

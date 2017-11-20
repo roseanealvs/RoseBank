@@ -53,6 +53,26 @@ public class UsuarioRESTClient {
         client.close();
         return UsuarioJSON.fromJSONObject(response);
     }
+    
+    public UsuarioModel findUserByEmail(String email) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.usuario/email/" + email).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return UsuarioJSON.fromJSONObject(response);
+    }
+    
+    public UsuarioModel findUserByLogin(String login) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.usuario/login/" + login).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return UsuarioJSON.fromJSONObject(response);
+    }
 
     public void create(UsuarioModel usuario) {
         Client client = ClientBuilder.newClient();

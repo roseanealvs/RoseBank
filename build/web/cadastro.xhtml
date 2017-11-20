@@ -3,8 +3,7 @@
 <ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="./_template.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="top">
 
@@ -12,7 +11,7 @@
 
     <ui:define name="content">
         <h:form id="loginForm">
-            <p:growl id="growl" life="2000" />
+            <p:growl id="growl" life="2000" showDetail="false" globalOnly="true" redisplay="false"/>
             <h:panelGrid style="margin-left: 35%;">
                 <p:panelGrid columns="2" styleClass="login">
 
@@ -32,13 +31,13 @@
 
                 </p:panelGrid>
                 <p:panelGrid style="margin-left:15%" columns="2">
-                    <p:commandButton value="#{msgs.salvar}" actionListener="#{roseBankBean.salvarCadastro()}"  
+                    <p:commandButton value="#{msgs.salvar}" action="#{roseBankBean.salvarCadastro()}"  
                                      icon="ui-icon-disk" 
                                      update="growl"/>
                     <p:commandButton value="#{msgs.cancelar}" action="#{roseBankBean.cancelar()}" immediate="true"/>
 
                 </p:panelGrid>
-                <h:outputLabel value="#{roseBankBean.message}" styleClass="erro" />
+                
             </h:panelGrid>    
 
         </h:form>

@@ -39,13 +39,17 @@ public class UsuarioJSON {
                 new StringReader(json));
         JsonObject obj = reader.readObject();
         reader.close();
-        UsuarioModel u = new UsuarioModel();
-        u.setLogin(obj.getString("login"));
-        u.setSenha(obj.getString("senha"));
-        u.setNome(obj.getString("nome"));
-        u.setId(obj.getString("id"));
-        u.setEmail(obj.getString("email"));
-        return u;
+        if (!obj.isEmpty()) {
+            UsuarioModel u = new UsuarioModel();
+            u.setLogin(obj.getString("login"));
+            u.setSenha(obj.getString("senha"));
+            u.setNome(obj.getString("nome"));
+            u.setId(String.valueOf(obj.getInt("id")));
+            u.setEmail(obj.getString("email"));
+            return u;
+        }
+        
+        return null;
     }
 
     public static List<UsuarioModel> fromJSONArray(

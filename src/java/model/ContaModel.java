@@ -10,7 +10,7 @@ package model;
  * @author roseanealves
  */
 public class ContaModel {
-    private String descricao;
+    private String dsConta;
     private String valorAtual;
     private String id;
     private String idUsuario;
@@ -47,15 +47,15 @@ public class ContaModel {
     /**
      * @return the descricao
      */
-    public String getDescricao() {
-        return descricao;
+    public String getDsConta() {
+        return dsConta;
     }
 
     /**
      * @param descricao the descricao to set
      */
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setDsConta(String descricao) {
+        this.dsConta = descricao;
     }
 
     /**

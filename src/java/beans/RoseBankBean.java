@@ -6,7 +6,9 @@
 package beans;
 
 
-import facade.FacadeBank;
+import exception.EmailJaCadastradoException;
+import exception.LoginJaCadastradoException;
+
 import facade.FacadeBankREST;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,12 +24,12 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 import model.ContaModel;
-import model.DAO;
+
 import model.TransacaoModel;
 import model.UsuarioModel;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.TabChangeEvent;
-import rest.ContaRESTClient;
+
 
 /**
  *
@@ -41,16 +43,21 @@ public class RoseBankBean implements Serializable {
     private List<TransacaoModel> transacoes = new ArrayList<>();
     private UsuarioModel usuario = new UsuarioModel();
     private ContaModel conta = new ContaModel();
-    private FacadeBank facade = new FacadeBank();
+    private TransacaoModel transacao = new TransacaoModel();
+
     private FacadeBankREST facadeRest = new FacadeBankREST();
-    private String message;
+    private String mensagem;
     private String acao;
     private Locale localizacao;
     private static final Locale[] COUNTRIES = {Locale.ENGLISH, Locale.forLanguageTag("pt-br")};
     private boolean autorizado;
-
+    private String contaOrigem;
+    private String contaDestino;
+    private String valor;
+    private String texto;
+    private String descricaoConta;
     public RoseBankBean() {
-        message = null;
+        
     }
 
     public void mudouIdioma(ValueChangeEvent event) {
@@ -66,24 +73,68 @@ public class RoseBankBean implements Serializable {
         return idiomas;
     }
 
-    public void adicionarAmigo() {
-        facade.adicionarAmigo();
-        addMessage(getResourceMessage("usuario_salvo"));
+    public String creditar() {
+        conta = facadeRest.findContaById(conta);
+        double novoValor = Double.parseDouble(conta.getValorAtual()) + Double.parseDouble(transacao.getValor());
+        addMessage(getResourceMessage("transacao_salva"));
+        
+        conta.setValorAtual(String.valueOf(novoValor));
+        facadeRest.editarConta(conta);
+        transacao.setContaOrigem(conta.getId());
+        transacao.setUsuarioId(getSessionUser().getId());
+        transacao.setTipoTransacao("C");
+        facadeRest.adicionarTransacao(transacao);
+        transacao = new TransacaoModel();
+        addMessage(getResourceMessage("transacao_salva"));
+        
+        return null;
+    }
+    
+    public String debitar() {
+        conta = facadeRest.findContaById(conta);
+        double valorAtual = Double.parseDouble(conta.getValorAtual());
+        double debito = Double.parseDouble(transacao.getValor());
+        if (debito > valorAtual) {
+            addMessage(getResourceMessage("saldo_insuficiente"));
+        } else {
+            double novoValor = valorAtual - debito;
+            conta.setValorAtual(String.valueOf(novoValor));
+            facadeRest.editarConta(conta);
+            transacao.setContaOrigem(conta.getId());
+            transacao.setUsuarioId(getSessionUser().getId());
+            transacao.setTipoTransacao("D");
+            facadeRest.adicionarTransacao(transacao);
+            transacao = new TransacaoModel();
+            addMessage(getResourceMessage("transacao_salva"));
+        }
+        
+        return null;
+    }
+    
+    public void adicionarConta() {
+        conta = new ContaModel();
+        conta.setIdUsuario(getSessionUser().getId());
+        conta.setDsConta(descricaoConta);
+        conta.setValorAtual("0");
+        facadeRest.adicionarConta(conta);
+        conta = new ContaModel();
+        descricaoConta = "";
+        addMessage(getResourceMessage("conta_adicionada"));
     }
     
     public String salvarCadastro() {
-//        try {
-            message = null;
-            DAO dao = new DAO(UsuarioModel.class);
-            dao.adicionar(usuario);
+        try {
+           
+            facadeRest.adicionarUsuario(usuario);
             
             usuario = new UsuarioModel();
-            return "/index";
-//        } catch (UsuarioJaExisteException | EmailJaExisteException e) {
-//            addMessage(getResourceMessage("usuario_salvo"));
-//        }
+            addMessage(getResourceMessage("usuario_cadastrado"));
+            return "index";
+        } catch (EmailJaCadastradoException | LoginJaCadastradoException e) {
+            addMessage(getResourceMessage("usuario_salvo"));
+        }
 
-//        return null;
+        return null;
     }
 
     private String getResourceMessage(String msg) {
@@ -126,25 +177,13 @@ public class RoseBankBean implements Serializable {
         return null;
     }
 
-    public String loadUsuarios() {
-        getUsuariosList();
-        return null;
-    }
-
     public String loadTransacoes() {
-        changeSessionAcao("tran_con");
-        transacoes = facade.getTransacoes(getSessionUser().getLogin());
-        return null;
-    }
-
-    public String getUsuariosList() {
-        usuarios = facade.getUsuarios(getSessionUser().getLogin());
+        transacoes = facadeRest.getTransacoesPorUsuario(getSessionUser());
         return null;
     }
 
     public String getContasUsuario() {
-        DAO dao = new DAO(ContaModel.class);
-        setContas(dao.listarGenerico("Conta.findByIdUsuario"));
+        setContas(facadeRest.getContasPorUsuario(usuario));
         return null;
     }
 
@@ -215,22 +254,25 @@ public class RoseBankBean implements Serializable {
     
     public void onEdit(RowEditEvent event) {        
         ContaModel c = (ContaModel) event.getObject();
-        ContaRESTClient rest = new ContaRESTClient();
-        rest.edit(conta);
-        FacesMessage msg = new FacesMessage("Conta atualizada", c.getDescricao());
-        FacesContext.getCurrentInstance().addMessage(null, msg);
+        facadeRest.editarConta(c);
+        addMessage(getResourceMessage("conta_editada"));
+    }
+    
+    public void onRowEdit(RowEditEvent event) {
+        ContaModel c = (ContaModel) event.getObject();
+        facadeRest.editarConta(c);
+        addMessage(getResourceMessage("conta_editada"));
     }
     
     public String autenticar() {
-        DAO dao = new DAO(UsuarioModel.class);
-        if (dao.listarGenerico("Usuario.findByLoginAndSenha", usuario.getLogin(), usuario.getSenha()) == null) {
+        this.usuario = facadeRest.getUsuarioPorLoginSenha(usuario);
+        if (this.usuario != null) {
             setSessionUser();
             setAutorizado(true);
             return "/protected/principal";
         }
-       
         setAutorizado(false);
-        addMessage("login/senha inválidos");
+        addMessage(getResourceMessage("login_senha_invalid"));
 
         return "/index";
     }
@@ -240,11 +282,18 @@ public class RoseBankBean implements Serializable {
         return "/index";
     }
 
+    public void onDelete(ContaModel c) {
+        facadeRest.apagarTransacoesPorContaId(c);
+        facadeRest.deletarConta(c);
+        contas.remove(c);
+        addMessage(getResourceMessage("conta_excluida"));
+    }
+    
     public void onTabChange(TabChangeEvent event) {
         if (event != null) {
             switch (event.getTab().getId()) {
-            case "userTab":
-                loadUsuarios();
+            case "manageContaTab":
+                loadContas();
                 break;
             case "contaTab":
                 loadContas();
@@ -293,34 +342,6 @@ public class RoseBankBean implements Serializable {
      */
     public void setConta(ContaModel conta) {
         this.conta = conta;
-    }
-
-    /**
-     * @return the facade
-     */
-    public FacadeBank getFacade() {
-        return facade;
-    }
-
-    /**
-     * @param facade the facade to set
-     */
-    public void setFacade(FacadeBank facade) {
-        this.facade = facade;
-    }
-
-    /**
-     * @return the message
-     */
-    public String getMessage() {
-        return message;
-    }
-
-    /**
-     * @param message the message to set
-     */
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     /**
@@ -391,6 +412,104 @@ public class RoseBankBean implements Serializable {
      */
     public void setAutorizado(boolean autorizado) {
         this.autorizado = autorizado;
+    }
+
+    /**
+     * @return the contaOrigem
+     */
+    public String getContaOrigem() {
+        return contaOrigem;
+    }
+
+    /**
+     * @param contaOrigem the contaOrigem to set
+     */
+    public void setContaOrigem(String contaOrigem) {
+        this.contaOrigem = contaOrigem;
+    }
+
+    /**
+     * @return the contaDestino
+     */
+    public String getContaDestino() {
+        return contaDestino;
+    }
+
+    /**
+     * @param contaDestino the contaDestino to set
+     */
+    public void setContaDestino(String contaDestino) {
+        this.contaDestino = contaDestino;
+    }
+
+    /**
+     * @return the valor
+     */
+    public String getValor() {
+        return valor;
+    }
+
+    /**
+     * @param valor the valor to set
+     */
+    public void setValor(String valor) {
+        this.valor = valor;
+    }
+
+    /**
+     * @return the texto
+     */
+    public String getTexto() {
+        return texto;
+    }
+
+    /**
+     * @param texto the texto to set
+     */
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    /**
+     * @return the transacao
+     */
+    public TransacaoModel getTransacao() {
+        return transacao;
+    }
+
+    /**
+     * @param transacao the transacao to set
+     */
+    public void setTransacao(TransacaoModel transacao) {
+        this.transacao = transacao;
+    }
+
+    /**
+     * @return the descricaoConta
+     */
+    public String getDescricaoConta() {
+        return descricaoConta;
+    }
+
+    /**
+     * @param descricaoConta the descricaoConta to set
+     */
+    public void setDescricaoConta(String descricaoConta) {
+        this.descricaoConta = descricaoConta;
+    }
+
+    /**
+     * @return the mensagem
+     */
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    /**
+     * @param mensagem the mensagem to set
+     */
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
 }

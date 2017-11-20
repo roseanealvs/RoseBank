@@ -42,6 +42,16 @@ public class ContaRESTClient {
         return ContaJSON.fromJSONObject(response);
     }
 
+    public List<ContaModel> findAccountByUser(Integer idUsuario) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.conta/usuario/" + idUsuario).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return ContaJSON.fromJSONArray(response);
+    }
+    
     public void create(ContaModel conta) {
         Client client = ClientBuilder.newClient();
         client.target(WEBSERVICE_URL + "service.conta").

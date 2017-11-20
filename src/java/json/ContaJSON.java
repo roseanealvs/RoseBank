@@ -24,7 +24,7 @@ public class ContaJSON {
         JsonObject contaJSON
                 = Json.createObjectBuilder().
                 add("id", conta.getId()).
-                add("descricao", conta.getDescricao()).
+                add("descricao", conta.getDsConta()).
                 add("valorAtual", conta.getValorAtual()).
                 add("id", conta.getId()).
                 add("idUsuario", conta.getIdUsuario()).
@@ -39,11 +39,11 @@ public class ContaJSON {
         JsonObject contaObject = reader.readObject();
         reader.close();
         ContaModel c = new ContaModel();
-        c.setId(contaObject.getString("id"));
-        c.setDescricao(contaObject.getString("descricao"));
-        c.setValorAtual(contaObject.getString("valorAtual"));
-        c.setIdUsuario(contaObject.getString("idUsuario"));
-        c.setValorTransferir(contaObject.getString("valorTransferir"));
+        c.setId(String.valueOf(contaObject.getInt("id")));
+        c.setDsConta(contaObject.getString("dsConta"));
+        c.setValorAtual(String.valueOf(contaObject.get("valorAtual")));
+        c.setIdUsuario(String.valueOf(contaObject.getInt("idUsuario")));
+      
         return c;
     }
 
@@ -57,11 +57,10 @@ public class ContaJSON {
         for (JsonValue value : contaArray) {
             JsonObject obj = (JsonObject) value;
             ContaModel c = new ContaModel();
-            c.setId(obj.getString("id"));
-            c.setDescricao(obj.getString("descricao"));
-            c.setValorAtual(obj.getString("valorAtual"));
-            c.setIdUsuario(obj.getString("idUsuario"));
-            c.setValorTransferir(obj.getString("valorTransferir"));
+            c.setId(String.valueOf(obj.getInt("id")));
+            c.setDsConta(obj.getString("dsConta"));
+            c.setValorAtual(String.valueOf(obj.getInt("valorAtual")));
+            c.setIdUsuario(String.valueOf(obj.getInt("idUsuario")));
             contas.add(c);
         }
         return contas;

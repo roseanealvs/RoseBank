@@ -10,8 +10,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import json.ContaJSON;
-import model.ContaModel;
+
+import json.TransacaoJSON;
+
 import model.TransacaoModel;
 
 /**
@@ -23,24 +24,24 @@ public class TransacaoRESTClient {
             = "http://localhost:8080/RESTRoseBank/webresources/";
     private String response;
     
-    public List<ContaModel> findAll() {
+    public List<TransacaoModel> findAll() {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.transacao").
                 request(MediaType.APPLICATION_JSON).
                 get(String.class);
         client.close();
-        return ContaJSON.fromJSONArray(response);
+        return TransacaoJSON.fromJSONArray(response);
     }
 
-    public ContaModel find(Long id) {
+    public TransacaoModel find(Long id) {
         Client client = ClientBuilder.newClient();
         response = client.target(WEBSERVICE_URL
                 + "service.transacao/" + id).
                 request(MediaType.APPLICATION_JSON)
                 .get(String.class);
         client.close();
-        return ContaJSON.fromJSONObject(response);
+        return TransacaoJSON.fromJSONObject(response);
     }
 
     public void create(TransacaoModel transacao) {
@@ -69,5 +70,25 @@ public class TransacaoRESTClient {
                 request(MediaType.APPLICATION_JSON).
                 delete();
         client.close();
+    }
+    
+     public List<TransacaoModel> findTransactionByUser(Integer idUsuario) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.transacao/usuario/" + idUsuario).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return TransacaoJSON.fromJSONArray(response);
+    }
+     
+     public List<TransacaoModel> findTransactionByAccount(Integer idConta) {
+        Client client = ClientBuilder.newClient();
+        response = client.target(WEBSERVICE_URL
+                + "service.transacao/conta/" + idConta).
+                request(MediaType.APPLICATION_JSON)
+                .get(String.class);
+        client.close();
+        return TransacaoJSON.fromJSONArray(response);
     }
 }

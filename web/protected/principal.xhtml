@@ -20,61 +20,88 @@ and open the template in the editor.
 
     <ui:define name="content">
         <h:form id="formPrincipal">
-           
-            <p:tabView id="tabViewId" orientation="top">
+            <p:growl id="growl" life="2000" showDetail="false" globalOnly="true" redisplay="false"/>
+            <p:tabView id="tabViewId" orientation="top">  
+                
                 <p:ajax event="tabChange" listener="#{roseBankBean.onTabChange}" update=":formPrincipal"/>
                 <p:tab title="#{msgs.inicio}">
                     <p:outputPanel style="width:400px; margin: 5% 0 0 35%;">
                         <h:outputText style="font-size:20px;" value="#{msgs.inicio_conteudo}"/>
                     </p:outputPanel>
                 </p:tab>
-                <p:tab id="userTab" title="#{msgs.amigos}">
-                    <p:dataTable paginator="true" 
-                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             id="tabelaUsuario" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
-                             value="#{roseBankBean.usuarios}" var="u">
-                        <f:facet name="caption">#{msgs.usuario}</f:facet>
-                        <p:column class="columnStyle" headerText="#{msgs.nome}">
-                            <h:outputText value="#{u.nome}"/>
-                        </p:column>
-                        <p:column headerText="#{msgs.id}">
-                            <h:outputText value="#{u.id}"/>
-                        </p:column>
-                        <p:column headerText="#{msgs.email}">
-                            <h:outputText value="#{u.email}"/>
-                        </p:column>
+                <p:tab id="manageContaTab" title="#{msgs.gerenciar_conta}">
+                    <p:panelGrid columns="2" style="margin: 5% 0 0 30%">
+                        <h:outputText style="font-size:20px;" value="#{msgs.escolher_conta}"/>
+                        <p:selectOneMenu value="#{roseBankBean.conta.id}">
+                            <f:selectItem itemLabel="#{msgs.selecione_um}" itemValue="" />
+                            <f:selectItems value="#{roseBankBean.contas}" var="c" itemLabel="#{c.dsConta}" itemValue="#{c.id}"/>
+                        </p:selectOneMenu>
+                        <h:outputText style="font-size:20px;" value="#{msgs.valor}:" />
+                        <p:inputText value="#{roseBankBean.transacao.valor}"></p:inputText>
                         
-                    </p:dataTable>
+                        <h:outputText style="font-size:20px;" value="#{msgs.descricao}:"/>
+                        <h:panelGrid>
+                            
+                            <p:inputTextarea value="#{roseBankBean.transacao.dsTransacao}" rows="5" cols="30" counter="display" maxlength="100" counterTemplate="{0} characters remaining." autoResize="false" />
+                            <h:outputText id="display" />
+                        </h:panelGrid>
+                        
+                        <p:commandButton update="@form" alt="Debitar" value="Debitar" action="#{roseBankBean.debitar}"/>
+                        <p:commandButton update="@form" alt="Creditar" value="Creditar" action="#{roseBankBean.creditar}"/>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab id="addConta" title="#{msgs.adicionar_conta}">
+                    <h:panelGrid styleClass="login">
+                    <p:panelGrid columns="2">
+                        <h:outputText style="font-size:20px;" value="#{msgs.descricao}:"/>
+                        <p:inputText value="#{roseBankBean.descricaoConta}"></p:inputText>
+                        
+                        <h:panelGrid>
+                            <p:commandButton update="@form" alt="#{msgs.adicionar_conta}" value="#{msgs.adicionar_conta}" action="#{roseBankBean.adicionarConta}"/>
+                        </h:panelGrid>
+                    </p:panelGrid>
+                        </h:panelGrid>
                 </p:tab>
                 <p:tab id="contaTab" title="#{msgs.conta}">
                     <p:dataTable paginator="true" 
                              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                              id="tabelaConta" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
-                             value="#{roseBankBean.contas}" var="c">
+                             value="#{roseBankBean.contas}" var="c" editable="true">
                         <f:facet name="caption">#{msgs.contas}</f:facet>
+                        <p:ajax event="rowEdit" listener="#{roseBankBean.onRowEdit}"  />
                         <p:column class="columnStyle" headerText="#{msgs.id}">
                             <h:outputText value="#{c.id}"/>
                         </p:column>
                         <p:column headerText="#{msgs.descricao}">
-                            <h:outputText value="#{c.descricao}"/>
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{c.dsConta}" /></f:facet>
+                                <f:facet name="input"><p:inputText id="modelInput" value="#{c.dsConta}" style="width:100%"/></f:facet>
+                            </p:cellEditor>
                         </p:column>
                         <p:column headerText="#{msgs.valor}">
                             <h:outputText value="#{c.valorAtual}"/>
                         </p:column>
-                       
+                       <p:column headerText="#{msgs.alterar}" style="width:32px">
+                            <p:rowEditor/>
+                        </p:column>
+                        <p:column headerText="#{msgs.excluir}" style="width:32px">
+                            <p:commandButton ajax="true" update="@form" icon="ui-icon-trash" alt="Excluir" title="Excluir" action="#{roseBankBean.onDelete(c)}" onclick="return confirm('Confirma a exclusao?')"/>
+                        </p:column>
                     </p:dataTable>
                 </p:tab>
                 <p:tab id="transacaoTab" title="#{msgs.transacoes}">
                     <p:dataTable paginator="true" 
                              paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                             id="tabelaTransacoes" rowsPerPageTemplate="5,10,15" emptyMessage="#{msgs.nao_tem_registro}"
+                             id="tabelaTransacoes" rowsPerPageTemplate="5,10" emptyMessage="#{msgs.nao_tem_registro}"
                              value="#{roseBankBean.transacoes}" var="t">
                         <f:facet name="caption">#{msgs.transacoes}</f:facet>
                         <p:column class="columnStyle" headerText="#{msgs.descricao}">
-                            <h:outputText value="#{t.descricao}"/>
+                            <h:outputText value="#{t.dsTransacao}"/>
                         </p:column>
                         <p:column headerText="#{msgs.data}">
-                            <h:outputText value="#{t.data}"/>
+                            <h:outputText value="#{t.dataTransacao}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
                         </p:column>
                         <p:column headerText="#{msgs.valor}">
                             <h:outputText value="#{t.valor}"/>
@@ -82,27 +109,12 @@ and open the template in the editor.
                         <p:column headerText="#{msgs.conta}">
                             <h:outputText value="#{t.contaOrigem}"/>
                         </p:column>
-                    </p:dataTable>
-                </p:tab>
-                <p:tab id="addAmigoTab" title="#{msgs.adicionar_amigo}">
-                    <p:dataTable paginator="true" 
-                             id="tabelaBuscaAmigos" emptyMessage="#{msgs.nao_tem_registro}"
-                             value="#{roseBankBean.transacoes}" var="t">
-                        <f:facet name="caption">#{msgs.usuario}</f:facet>
-                        <p:column class="columnStyle" headerText="#{msgs.nome}" filterBy="#{u.nome}" filterMatchMode="contains">
-                            <h:outputText value="#{u.nome}"/>
-                        </p:column>
-                        <p:column headerText="#{msgs.id}" filterBy="#{u.id}" filterMatchMode="contains">
-                            <h:outputText value="#{u.id}"/>
-                        </p:column>
-                        <p:column headerText="#{msgs.email}">
-                            <h:outputText value="#{u.email}"/>
-                        </p:column>
-                        <p:column headerText="#{msgs.adicionar_amigo}">
-                            <p:commandButton icon="ui-icon-disk" action="#{roseBankBean.adicionarAmigo()}"/>
+                        <p:column headerText="#{msgs.tipo}">
+                            <h:outputText value="#{t.tipoTransacao}"/>
                         </p:column>
                     </p:dataTable>
                 </p:tab>
+               
             </p:tabView>
         </h:form>
     </ui:define>

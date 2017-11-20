@@ -37,7 +37,7 @@ public class AutorizacaoFilter implements Filter {
                 bankBean = new RoseBankBean();
                 bankBean.setAutorizado(false);
             }
-            bankBean.setMessage("Login!");
+            bankBean.setMensagem("Login!");
             sessao.setAttribute("roseBankBean", bankBean);
             String contextPath = ((HttpServletRequest) request).getContextPath();
             ((HttpServletResponse) response).sendRedirect(contextPath + "/faces/index.xhtml");
